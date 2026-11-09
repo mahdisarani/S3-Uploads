@@ -172,8 +172,15 @@ class Plugin {
 		$this->original_upload_dir = $dirs;
 		$s3_path = $this->get_s3_path();
 
-		$dirs['path']    = str_replace( WP_CONTENT_DIR, $s3_path, $dirs['path'] );
-		$dirs['basedir'] = str_replace( WP_CONTENT_DIR, $s3_path, $dirs['basedir'] );
+		// Buckets that store media at the top level (no "uploads" prefix inside
+		// the bucket) map the uploads directory itself onto the bucket root.
+		if ( defined( 'S3_UPLOADS_BUCKET_IS_UPLOADS_DIR' ) && S3_UPLOADS_BUCKET_IS_UPLOADS_DIR ) {
+			$dirs['path']    = str_replace( $dirs['basedir'], $s3_path, $dirs['path'] );
+			$dirs['basedir'] = $s3_path;
+		} else {
+			$dirs['path']    = str_replace( WP_CONTENT_DIR, $s3_path, $dirs['path'] );
+			$dirs['basedir'] = str_replace( WP_CONTENT_DIR, $s3_path, $dirs['basedir'] );
+		}
 
 		if ( ! defined( 'S3_UPLOADS_DISABLE_REPLACE_UPLOAD_URL' ) || ! S3_UPLOADS_DISABLE_REPLACE_UPLOAD_URL ) {
 
