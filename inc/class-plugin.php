@@ -359,6 +359,18 @@ class Plugin {
 			$params['region'] = $this->region;
 		}
 
+		if ( defined( 'S3_UPLOADS_ENDPOINT' ) && S3_UPLOADS_ENDPOINT ) {
+			$params['endpoint'] = S3_UPLOADS_ENDPOINT;
+
+			// Custom endpoints are usually S3-compatible services that don't
+			// support the default integrity checksums added in AWS SDK 3.337+,
+			// so only send them when the operation requires it.
+			if ( ! defined( 'S3_UPLOADS_CHECKSUMS' ) || S3_UPLOADS_CHECKSUMS ) {
+				$params['requestChecksumCalculation'] = 'when_required';
+				$params['responseChecksumValidation'] = 'when_required';
+			}
+		}
+
 		if ( defined( 'WP_PROXY_HOST' ) && defined( 'WP_PROXY_PORT' ) ) {
 			$proxy_auth    = '';
 			$proxy_address = WP_PROXY_HOST . ':' . WP_PROXY_PORT;
