@@ -642,14 +642,17 @@ class Plugin {
 	/**
 	 * Add the S3 signed params to the image srcset (response image) sizes.
 	 *
-	 * @param array{url: string, descriptor: string, value: int}[] $sources
+	 * @param array|false $sources
 	 * @param array $sizes
 	 * @param string $src
 	 * @param array $meta
 	 * @param integer $post_id
-	 * @return array{url: string, descriptor: string, value: int}[]
+	 * @return array|false
 	 */
-	public function add_s3_signed_params_to_attachment_image_srcset( array $sources, array $sizes, string $src, array $meta, int $post_id ) : array {
+	public function add_s3_signed_params_to_attachment_image_srcset( $sources, array $sizes, string $src, array $meta, int $post_id ) {
+		if ( ! is_array( $sources ) ) {
+			return $sources;
+		}
 		foreach ( $sources as &$source ) {
 			$source['url'] = $this->add_s3_signed_params_to_attachment_url( $source['url'], $post_id );
 		}
